@@ -90,4 +90,31 @@ impl Processor {
         msg!("Greeting account created for owner: {}", owner);
         Ok(())
     }
+
+    fn process_update_message(accounts: &[AccountInfo], message: String) -> ProgramResult {
+        let account_info_iter = &mut accounts.iter();
+        let owner = next_account_info(account_info_iter)?;
+        let greeting_account = next_account_info(account_info_iter)?;
+
+        if !owner.is_signer {
+            return Err(ProgramError::MissingRequiredSignature);
+        }
+
+        let mut greeting = Greeting::try_from_slice(&greeting_account.data.borrow())?;
+
+        if greeting.owner != *owner.key {
+            return Err(HelloError::Unauthorized.into());
+        }
+        
+        greeting.message = message;
+        greeting.count = greeting
+            .count
+            .checked_add(1)
+            .ok_or(HelloError::AmountOverflow)?;
+
+        greeting.serialize(&mut &mut greeting_account.data.borrow_mut()[..])?;
+
+        msg!("Message updated. Count: {}", greeting.count);
+        Ok(())
+    }
 }
