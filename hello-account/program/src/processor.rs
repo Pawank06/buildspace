@@ -105,6 +105,10 @@ impl Processor {
         if greeting.owner != *owner.key {
             return Err(HelloError::Unauthorized.into());
         }
+
+        if message.len() > MAX_MESSAGE_LEN {
+            return Err(HelloError::MessageTooLong.into());
+        }
         
         greeting.message = message;
         greeting.count = greeting
@@ -135,7 +139,7 @@ impl Processor {
 
         greeting.count = greeting
             .count
-            .checked_add()
+            .checked_add(1)
             .ok_or(HelloError::AmountOverflow)?;
 
         greeting.serialize(&mut &mut greeting_account.data.borrow_mut()[..])?;
