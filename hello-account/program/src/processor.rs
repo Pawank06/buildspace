@@ -117,4 +117,60 @@ impl Processor {
         msg!("Message updated. Count: {}", greeting.count);
         Ok(())
     }
+
+    fn process_increment_only(accounts: &[AccountInfo]) -> ProgramResult {
+        let account_info_iter = &mut accounts.iter();
+        let owner = next_account_info(account_info_iter)?;
+        let greeting_account = next_account_info(account_info_iter)?;
+
+        if !owner.is_signer {
+            return Err(ProgramError::MissingRequiredSignature);
+        }
+
+        let mut greeting = Greeting::try_from_slice(&greeting_account.data.borrow())?;
+
+        if greeting.owner != *owner.key {
+            return Err(HelloError::Unauthorized.into());
+        }
+
+        greeting.count = greeting
+            .count
+            .checked_add()
+            .ok_or(HelloError::AmountOverflow)?;
+
+        greeting.serialize(&mut &mut greeting_account.data.borrow_mut()[..])?;
+
+        msg!("Count incremented to: {}", greeting.count);
+        Ok(())
+    }
+
+    fn process_close(accounts: &[AccountInfo]) -> ProgramResult {
+        let account_info_iter = &mut accounts.iter();
+        let owner = next_account_info(account_info_iter)?;
+        let greeting_account = next_account_info(account_info_iter)?;
+        let destination = next_account_info(account_info_iter)?;
+
+        if !owner.is_signer {
+            return Err(ProgramError::MissingRequiredSignature);
+        }
+
+        let greeting = Greeting::try_from_slice(&greeting_account.data.borrow())?;
+
+        if greeting.owner != *owner.key {
+            return Err(HelloError::Unauthorized.into());
+        }
+
+        let dest_starting_lamports = destination.lamports();
+        **destination.lamports.borrow_mut() = dest_starting_lamports
+            .checked_add(greeting_account.lamports())
+            .ok_or(HelloError::AmountOverflow)?;
+        **greeting_account.lamports.borrow_mut() = 0;
+
+        let mut data = greeting_account.data.borrow_mut();
+
+        data.fill(0);
+
+        msg!("Greeting account closed");
+        Ok(())
+    }
 }
