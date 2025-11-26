@@ -1,1 +1,33 @@
 requirement.md
+# Rust
+target/
+**/*.rs.bk
+Cargo.lock
+
+# Solana
+test-ledger/
+*.so
+*.dump
+
+# Keypairs (IMPORTANT: Never commit private keys!)
+*.json
+!package.json
+!tsconfig.json
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Environment
+.env
+.env.local

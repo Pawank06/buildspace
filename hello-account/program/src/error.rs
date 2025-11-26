@@ -13,10 +13,10 @@ pub enum HelloError {
     ExpectedAmountMismatch,
 
     #[error("Amount Overflow")]
-    AmountOverflow.
+    AmountOverflow,
 
     #[error("Unauthorized")]
-    Unauthorized
+    Unauthorized,
 
     #[error("Message Too Long")]
     MessageTooLong,

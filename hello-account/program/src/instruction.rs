@@ -20,7 +20,7 @@ impl HelloInstruction {
                 let owner = Pubkey::new_from_array(
                     rest.get(..32)
                         .and_then(|slice| slice.try_into().ok())
-                        .ok_or(ProgramError::InvalidInstructionData)?;
+                        .ok_or(ProgramError::InvalidInstructionData)?,
                 );
                 Self::Initialize { owner }
             }

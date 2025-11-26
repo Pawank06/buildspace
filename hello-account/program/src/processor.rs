@@ -1,4 +1,4 @@
-use borsh::{BorshSerialize, BorshDeserialize}
+use borsh::{BorshSerialize, BorshDeserialize};
 use solana_program:: {
     account_info::{next_account_info, AccountInfo},
     entrypoint::ProgramResult,
@@ -9,13 +9,13 @@ use solana_program:: {
     rent::Rent,
     system_instruction,
     sysvar::Sysvar,
-}
+};
 
 use crate::{
     error::HelloError,
     instruction::HelloInstruction,
     state::{Greeting, MAX_MESSAGE_LEN},
-}
+};
 
 pub struct Processor;
 
@@ -40,7 +40,7 @@ impl Processor {
 
             HelloInstruction::IncrementOnly => {
                 msg!("Instruction: IncrementOnly");
-                Self::process_initialize_only(accounts)
+                Self::process_increment_only(accounts)
             }
 
             HelloInstruction::Close => {
@@ -69,7 +69,7 @@ impl Processor {
         let lamports = rent.minimum_balance(space);
 
         invoke(
-            &system_instruction::crate_account(
+            &system_instruction::create_account(
                 payer.key,
                 greeting_account.key,
                 lamports,
@@ -85,7 +85,7 @@ impl Processor {
             message: String::from("Hello, Solana!"),
         };
 
-        greeting.serialize(&mut &mut greeting_account.data.borrow_mut()[...])?;
+        greeting.serialize(&mut &mut greeting_account.data.borrow_mut()[..])?;
 
         msg!("Greeting account created for owner: {}", owner);
         Ok(())
