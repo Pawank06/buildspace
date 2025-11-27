@@ -1,0 +1,6 @@
+[workspace]
+members = [
+    "programs/pdacounter",
+    "client", "program",
+]
+resolver = "2"
