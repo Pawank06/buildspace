@@ -9,6 +9,7 @@ solana-sdk = "1.18"
 borsh = "0.10"
 anyhow = "1.0"
 clap = { version = "4.0", features = ["derive"] }
+shellexpand = "3.0"
 
 # Reference our program for shared types
-hello-account-program = { path = "../program" }
+hello-account = { path = "../program" }
